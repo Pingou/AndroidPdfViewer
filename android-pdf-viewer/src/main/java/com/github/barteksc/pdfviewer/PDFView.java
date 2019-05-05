@@ -287,6 +287,11 @@ public class PDFView extends RelativeLayout {
         super.onRestoreInstanceState(state.getSuperState());
     }
 
+
+    public void setRestoredState(PdfViewState viewState) {
+        restoredState = viewState;
+    }
+
     private void load(DocumentSource docSource, String password) {
         load(docSource, password, null);
     }
