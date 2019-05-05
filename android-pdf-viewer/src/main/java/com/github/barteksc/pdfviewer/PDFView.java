@@ -1642,11 +1642,11 @@ public class PDFView extends RelativeLayout {
      */
     public static class PdfViewState implements Serializable, Parcelable {
 
-        int currentPage;
-        float zoom = 1f;
+        public int currentPage;
+        public float zoom = 1f;
         // relative point of the page (0 to 1) that is in the center of the view
-        float pageFocusX;
-        float pageFocusY;
+        public float pageFocusX;
+        public float pageFocusY;
 
         public PdfViewState() {
         }
