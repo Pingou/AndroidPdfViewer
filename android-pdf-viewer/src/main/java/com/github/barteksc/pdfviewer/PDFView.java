@@ -1658,6 +1658,13 @@ public class PDFView extends RelativeLayout {
             pageFocusY = in.readFloat();
         }
 
+        private PdfViewState(int currentPage, float pageFocusX, float pageFocusY, float zoom) {
+            this.currentPage = currentPage;
+            this.zoom = zoom;
+            this.pageFocusX = pageFocusX;
+            this.pageFocusY = pageFocusY;
+        }
+
         @Override
         public void writeToParcel(Parcel out, int flags) {
             out.writeInt(currentPage);
