@@ -1658,7 +1658,7 @@ public class PDFView extends RelativeLayout {
             pageFocusY = in.readFloat();
         }
 
-        private PdfViewState(int currentPage, float pageFocusX, float pageFocusY, float zoom) {
+        public PdfViewState(int currentPage, float pageFocusX, float pageFocusY, float zoom) {
             this.currentPage = currentPage;
             this.zoom = zoom;
             this.pageFocusX = pageFocusX;
