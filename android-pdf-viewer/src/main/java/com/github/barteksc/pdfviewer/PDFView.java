@@ -501,6 +501,14 @@ public class PDFView extends RelativeLayout {
         }
     }
 
+    public float getPageOffset(int pageIndex, float zoom) {
+        return pdfFile.getPageOffset(pageIndex, zoom);
+    }
+
+    public float getSecondaryPageOffset(int pageIndex, float zoom) {
+        return pdfFile.getSecondaryPageOffset(pageIndex, zoom);
+    }
+
     public void recycle() {
         waitingDocumentConfigurator = null;
 
@@ -854,7 +862,7 @@ public class PDFView extends RelativeLayout {
         }
     }
 
-    void redraw() {
+    public void redraw() {
         invalidate();
     }
 
