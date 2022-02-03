@@ -30,6 +30,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -161,7 +162,7 @@ public class PDFView extends RelativeLayout {
     private DecodingAsyncTask decodingAsyncTask;
 
     /** The thread {@link #renderingHandler} will run on */
-    private final HandlerThread renderingHandlerThread;
+    private HandlerThread renderingHandlerThread;
     /** Handler always waiting in the background and rendering tasks */
     RenderingHandler renderingHandler;
 
@@ -563,6 +564,14 @@ public class PDFView extends RelativeLayout {
     @Override
     protected void onDetachedFromWindow() {
         recycle();
+        if (renderingHandlerThread != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                renderingHandlerThread.quitSafely();
+            } else {
+                renderingHandlerThread.quit();
+            }
+            renderingHandlerThread = null;
+        }
         super.onDetachedFromWindow();
     }
 
@@ -575,13 +584,33 @@ public class PDFView extends RelativeLayout {
         if (isInEditMode() || state != State.SHOWN) {
             return;
         }
+
+        // calculates the position of the point which in the center of view relative to big strip
+        float centerPointInStripXOffset = -currentXOffset + oldw * 0.5f;
+        float centerPointInStripYOffset = -currentYOffset + oldh * 0.5f;
+
+        float relativeCenterPointInStripXOffset;
+        float relativeCenterPointInStripYOffset;
+
+        if (swipeVertical){
+            relativeCenterPointInStripXOffset = centerPointInStripXOffset / pdfFile.getMaxPageWidth();
+            relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getDocLen(zoom);
+        }else {
+            relativeCenterPointInStripXOffset = centerPointInStripXOffset / pdfFile.getDocLen(zoom);
+            relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getMaxPageHeight();
+        }
+
         animationManager.stopAll();
         pdfFile.recalculatePageSizes(new Size(w, h));
+
         if (swipeVertical) {
-            moveTo(currentXOffset, -pdfFile.getPageOffset(currentPage, zoom));
-        } else {
-            moveTo(-pdfFile.getPageOffset(currentPage, zoom), currentYOffset);
+            currentXOffset = -relativeCenterPointInStripXOffset * pdfFile.getMaxPageWidth() + w * 0.5f;
+            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getDocLen(zoom) + h * 0.5f ;
+        }else {
+            currentXOffset = -relativeCenterPointInStripXOffset * pdfFile.getDocLen(zoom) + w * 0.5f;
+            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getMaxPageHeight() + h * 0.5f;
         }
+        moveTo(currentXOffset,currentYOffset);
         loadPageByOffset();
     }
 
@@ -1607,6 +1636,11 @@ public class PDFView extends RelativeLayout {
 
         public Configurator nightMode(boolean nightMode) {
             this.nightMode = nightMode;
+            return this;
+        }
+
+        public Configurator disableLongpress() {
+            PDFView.this.dragPinchManager.disableLongpress();
             return this;
         }
 
