@@ -575,6 +575,7 @@ public class PDFView extends RelativeLayout {
         super.onDetachedFromWindow();
     }
 
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         hasSize = true;
@@ -852,6 +853,9 @@ public class PDFView extends RelativeLayout {
 
         this.pdfFile = pdfFile;
 
+        if (renderingHandlerThread == null) {
+           renderingHandlerThread = new HandlerThread("PDF renderer");
+        }
         if (!renderingHandlerThread.isAlive()) {
             renderingHandlerThread.start();
         }
