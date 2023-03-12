@@ -233,6 +233,18 @@ public class PDFView extends RelativeLayout {
     /** Spacing between pages, in px */
     private int spacingPx = 0;
 
+    /** Spacing above the first page, in px */
+    private int spacingTopPx = 0;
+
+    /** Spacing below the last page, in px */
+    private int spacingBottomPx = 0;
+
+    /** Spacing Left and Right in px */
+    private int sideMarginPx = 0;
+
+    /** used to render the top margin only the first render */
+    private boolean initialRender = true;
+
     /** Add dynamic spacing to fit each page separately on the screen. */
     private boolean autoSpacing = false;
 
@@ -382,7 +394,11 @@ public class PDFView extends RelativeLayout {
         }
 
         page = pdfFile.determineValidPageNumberFrom(page);
-        float offset = page == 0 ? 0 : -pdfFile.getPageOffset(page, zoom);
+        float offset = -pdfFile.getPageOffset(page, zoom);;
+        if (page == 0 && initialRender) {
+            initialRender = false;
+            offset += spacingTopPx;
+        }
         if (swipeVertical) {
             if (withAnimation) {
                 animationManager.startYAnimation(currentYOffset, offset);
@@ -778,8 +794,8 @@ public class PDFView extends RelativeLayout {
         }
 
         // Move to the target page
-        float localTranslationX = 0;
-        float localTranslationY = 0;
+        float localTranslationX;
+        float localTranslationY;
         SizeF size = pdfFile.getPageSize(part.getPage());
 
         if (swipeVertical) {
@@ -1361,6 +1377,30 @@ public class PDFView extends RelativeLayout {
         this.autoSpacing = autoSpacing;
     }
 
+    int getSpacingTopPx() {
+        return spacingTopPx;
+    }
+
+    private void setSpacingTop(int spacingBottom) {
+        this.spacingTopPx = Util.getDP(getContext(), spacingBottom);
+    }
+
+    int getSpacingBottomPx() {
+        return spacingBottomPx;
+    }
+
+    private void setSpacingBottom(int spacingBottom) {
+        this.spacingBottomPx = Util.getDP(getContext(), spacingBottom);
+    }
+
+    int getSideMarginPx() {
+        return sideMarginPx;
+    }
+
+    private void setSideMargin(int sideMargin) {
+        this.sideMarginPx = Util.getDP(getContext(), sideMargin);
+    }
+
     private void setPageFitPolicy(FitPolicy pageFitPolicy) {
         this.pageFitPolicy = pageFitPolicy;
     }
@@ -1492,6 +1532,12 @@ public class PDFView extends RelativeLayout {
 
         private int spacing = 0;
 
+        private int spacingTop = 0;
+
+        private int spacingBottom = 0;
+
+        private int sideMargin = 0;
+
         private boolean autoSpacing = false;
 
         private FitPolicy pageFitPolicy = FitPolicy.WIDTH;
@@ -1618,6 +1664,21 @@ public class PDFView extends RelativeLayout {
             return this;
         }
 
+        public Configurator spacingTop(int spacingTop) {
+            this.spacingTop = spacingTop;
+            return this;
+        }
+
+        public Configurator spacingBottom(int spacingBottom) {
+            this.spacingBottom = spacingBottom;
+            return this;
+        }
+
+        public Configurator sideMargin(int sideMargin) {
+            this.sideMargin = sideMargin;
+            return this;
+        }
+
         public Configurator pageFitPolicy(FitPolicy pageFitPolicy) {
             this.pageFitPolicy = pageFitPolicy;
             return this;
@@ -1675,6 +1736,9 @@ public class PDFView extends RelativeLayout {
             PDFView.this.enableAntialiasing(antialiasing);
             PDFView.this.setSpacing(spacing);
             PDFView.this.setAutoSpacing(autoSpacing);
+            PDFView.this.setSpacingTop(spacingTop);
+            PDFView.this.setSpacingBottom(spacingBottom);
+            PDFView.this.setSideMargin(sideMargin);
             PDFView.this.setPageFitPolicy(pageFitPolicy);
             PDFView.this.setFitEachPage(fitEachPage);
             PDFView.this.setPageSnap(pageSnap);
