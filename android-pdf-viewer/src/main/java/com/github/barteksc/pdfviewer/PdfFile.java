@@ -37,6 +37,7 @@ class PdfFile {
     private PdfDocument pdfDocument;
     private PdfiumCore pdfiumCore;
     private int pagesCount = 0;
+    private int totalPageCount = 0;
     /** Original page sizes */
     private List<Size> originalPageSizes = new ArrayList<>();
     /** Scaled page sizes */
@@ -94,8 +95,10 @@ class PdfFile {
     private void setup(Size viewSize) {
         if (originalUserPages != null) {
             pagesCount = originalUserPages.length;
+            totalPageCount = pdfiumCore.getPageCount(pdfDocument);
         } else {
             pagesCount = pdfiumCore.getPageCount(pdfDocument);
+            totalPageCount = pagesCount;
         }
 
         for (int i = 0; i < pagesCount; i++) {
@@ -136,6 +139,10 @@ class PdfFile {
 
     public int getPagesCount() {
         return pagesCount;
+    }
+
+    public int getTotalPagesCount() {
+        return totalPageCount;
     }
 
     public SizeF getPageSize(int pageIndex) {
