@@ -1,7 +1,6 @@
-// We'll use the modern `plugins` block for clarity
 plugins {
     id 'com.android.library'
-    id 'maven-publish'      // <-- ADD THIS PLUGIN
+    id 'maven-publish'
 }
 
 ext {
@@ -61,20 +60,18 @@ dependencies {
     api 'io.github.oothp:pdfium-android:1.9.5-beta01'
 }
 
+// --- CORRECTED PUBLISHING BLOCK ---
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = project.group
+            artifactId = project.ext.artifact
+            version = project.version
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a publication called "release".
-            release(MavenPublication) {
-                // Applies the group, artifact name, and version from the build properties.
-                // JitPack automatically provides these values.
-                // For example: group='com.github.Pingou', version='d8d95c8'
-                groupId = project.group
-                artifactId = project.ext.artifact // Use the artifact name from your ext block
-                version = project.version
-
-                // Tells maven-publish to publish the AAR from the 'release' build variant.
+            // This nested afterEvaluate ensures that the Android component is ready
+            // before we try to reference it. This resolves the timing issue.
+            // <-- THE FIX IS HERE
+            afterEvaluate {
                 from components.release
             }
         }
