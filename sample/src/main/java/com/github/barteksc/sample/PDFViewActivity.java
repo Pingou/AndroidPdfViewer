@@ -50,6 +50,16 @@ public class PDFViewActivity extends AppCompatActivity implements
             });
 
     @Override
+    public void loadComplete(int nbPages, int totalNbPages) {
+
+    }
+
+    @Override
+    public void onPageChanged(int page, int pageCount) {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -125,13 +135,9 @@ public class PDFViewActivity extends AppCompatActivity implements
         return result;
     }
 
-    @Override
-    public void onPageChanged(int page, int pageCount) {
-        pageNumber = page;
-        setTitle(String.format("%s %s / %s", pdfFileName, page + 1, pageCount));
-    }
 
-    @Override
+
+
     public void loadComplete(int nbPages) {
         PdfDocument.Meta meta = pdfView.getDocumentMeta();
         Log.e(TAG, "title = " + meta.getTitle());

@@ -34,7 +34,7 @@ import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.RelativeLayout;
@@ -83,10 +83,13 @@ import java.util.List;
  * To fully understand this class you must know its principles :
  * - The PDF document is seen as if we always want to draw all the pages.
  * - The thing is that we only draw the visible parts.
- * - All parts are the same size, this is because we can't interrupt a native page rendering,
- * so we need these renderings to be as fast as possible, and be able to interrupt them
+ * - All parts are the same size, this is because we can't interrupt a native
+ * page rendering,
+ * so we need these renderings to be as fast as possible, and be able to
+ * interrupt them
  * as soon as we can.
- * - The parts are loaded when the current offset or the current zoom level changes
+ * - The parts are loaded when the current offset or the current zoom level
+ * changes
  * <p>
  * Important :
  * - DocumentPage = A page of the PDF document.
@@ -207,7 +210,8 @@ public class PDFView extends RelativeLayout {
 
     /**
      * True if bitmap should use ARGB_8888 format and take more memory
-     * False if bitmap should be compressed by using RGB_565 format and take less memory
+     * False if bitmap should be compressed by using RGB_565 format and take less
+     * memory
      */
     private boolean bestQuality = false;
 
@@ -219,7 +223,8 @@ public class PDFView extends RelativeLayout {
 
     /**
      * True if the view should render during scaling<br/>
-     * Can not be forced on older API versions (< Build.VERSION_CODES.KITKAT) as the GestureDetector does
+     * Can not be forced on older API versions (< Build.VERSION_CODES.KITKAT) as the
+     * GestureDetector does
      * not detect scrolling while scaling.<br/>
      * False otherwise
      */
@@ -227,8 +232,8 @@ public class PDFView extends RelativeLayout {
 
     /** Antialiasing and bitmap filtering */
     private boolean enableAntialiasing = true;
-    private PaintFlagsDrawFilter antialiasFilter =
-            new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    private PaintFlagsDrawFilter antialiasFilter = new PaintFlagsDrawFilter(0,
+            Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
     /** Spacing between pages, in px */
     private int spacingPx = 0;
@@ -300,7 +305,6 @@ public class PDFView extends RelativeLayout {
         super.onRestoreInstanceState(state.getSuperState());
     }
 
-
     public void setRestoredState(PdfViewState viewState) {
         restoredState = viewState;
     }
@@ -322,7 +326,8 @@ public class PDFView extends RelativeLayout {
 
     /**
      * Gets the current position and zoom state of the view.
-     * This state can be saved or persisted and later restored with {@link #restoreViewState(PdfViewState)}.
+     * This state can be saved or persisted and later restored with
+     * {@link #restoreViewState(PdfViewState)}.
      */
     public PdfViewState getCurrentViewState() {
         if (pdfFile == null) {
@@ -335,30 +340,46 @@ public class PDFView extends RelativeLayout {
         float centerY = -currentYOffset + (getHeight() / 2f);
         SizeF pageSize = pdfFile.getScaledPageSize(state.currentPage, state.zoom);
         if (swipeVertical) {
-            state.pageFocusX = (centerX - pdfFile.getSecondaryPageOffset(state.currentPage, zoom)) / pageSize.getWidth();
+            state.pageFocusX = (centerX - pdfFile.getSecondaryPageOffset(state.currentPage, zoom))
+                    / pageSize.getWidth();
             state.pageFocusY = (centerY - pdfFile.getPageOffset(state.currentPage, zoom)) / pageSize.getHeight();
         } else {
             state.pageFocusX = (centerX - pdfFile.getPageOffset(state.currentPage, zoom)) / pageSize.getWidth();
-            state.pageFocusY = (centerY - pdfFile.getSecondaryPageOffset(state.currentPage, zoom)) / pageSize.getHeight();
+            state.pageFocusY = (centerY - pdfFile.getSecondaryPageOffset(state.currentPage, zoom))
+                    / pageSize.getHeight();
         }
         return state;
     }
 
     /**
-     * <p>Restores a view state previously gotten with {@link #getCurrentViewState()} or
-     * {@link #onSaveInstanceState()}. </p>
-     * <p>The view handles restoring state with onSaveInstanceState for configuration changes or
-     * activity destruction, but the host application has to make sure the same pdf is loaded.
-     * This view has no way of knowing if the pdf loaded after restoring is the same as before.
-     * If the pdf content changed or a different pdf is loaded, it may restore to a incorrect position.
-     * To disable the automatic restoration use {@link #setSaveEnabled(boolean)}.</p>
-     * <p>Note: This must be called after a pdf file has been loaded. A good place to call this is
-     * in the {@link OnLoadCompleteListener} callback.</p>
+     * <p>
+     * Restores a view state previously gotten with {@link #getCurrentViewState()}
+     * or
+     * {@link #onSaveInstanceState()}.
+     * </p>
+     * <p>
+     * The view handles restoring state with onSaveInstanceState for configuration
+     * changes or
+     * activity destruction, but the host application has to make sure the same pdf
+     * is loaded.
+     * This view has no way of knowing if the pdf loaded after restoring is the same
+     * as before.
+     * If the pdf content changed or a different pdf is loaded, it may restore to a
+     * incorrect position.
+     * To disable the automatic restoration use {@link #setSaveEnabled(boolean)}.
+     * </p>
+     * <p>
+     * Note: This must be called after a pdf file has been loaded. A good place to
+     * call this is
+     * in the {@link OnLoadCompleteListener} callback.
+     * </p>
+     * 
      * @throws IllegalStateException If pdf file is not loaded
      */
     public void restoreViewState(PdfViewState state) {
         if (pdfFile == null) {
-            throw new IllegalStateException("Pdf file has not been loaded. Call restoreViewState from the loadCompleted callback.");
+            throw new IllegalStateException(
+                    "Pdf file has not been loaded. Call restoreViewState from the loadCompleted callback.");
         }
         zoom = state.zoom;
         int maxPageCount = pdfFile.getPagesCount() - 1;
@@ -394,7 +415,8 @@ public class PDFView extends RelativeLayout {
         }
 
         page = pdfFile.determineValidPageNumberFrom(page);
-        float offset = -pdfFile.getPageOffset(page, zoom);;
+        float offset = -pdfFile.getPageOffset(page, zoom);
+        ;
         if (page == 0 && initialRender) {
             initialRender = false;
             offset += spacingTopPx;
@@ -490,12 +512,11 @@ public class PDFView extends RelativeLayout {
     public void setNightMode(boolean nightMode) {
         this.nightMode = nightMode;
         if (nightMode) {
-            ColorMatrix colorMatrixInverted =
-                    new ColorMatrix(new float[]{
-                            -1, 0, 0, 0, 255,
-                            0, -1, 0, 0, 255,
-                            0, 0, -1, 0, 255,
-                            0, 0, 0, 1, 0});
+            ColorMatrix colorMatrixInverted = new ColorMatrix(new float[] {
+                    -1, 0, 0, 0, 255,
+                    0, -1, 0, 0, 255,
+                    0, 0, -1, 0, 255,
+                    0, 0, 0, 1, 0 });
 
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrixInverted);
             paint.setColorFilter(filter);
@@ -591,7 +612,6 @@ public class PDFView extends RelativeLayout {
         super.onDetachedFromWindow();
     }
 
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         hasSize = true;
@@ -602,17 +622,18 @@ public class PDFView extends RelativeLayout {
             return;
         }
 
-        // calculates the position of the point which in the center of view relative to big strip
+        // calculates the position of the point which in the center of view relative to
+        // big strip
         float centerPointInStripXOffset = -currentXOffset + oldw * 0.5f;
         float centerPointInStripYOffset = -currentYOffset + oldh * 0.5f;
 
         float relativeCenterPointInStripXOffset;
         float relativeCenterPointInStripYOffset;
 
-        if (swipeVertical){
+        if (swipeVertical) {
             relativeCenterPointInStripXOffset = centerPointInStripXOffset / pdfFile.getMaxPageWidth();
             relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getDocLen(zoom);
-        }else {
+        } else {
             relativeCenterPointInStripXOffset = centerPointInStripXOffset / pdfFile.getDocLen(zoom);
             relativeCenterPointInStripYOffset = centerPointInStripYOffset / pdfFile.getMaxPageHeight();
         }
@@ -622,12 +643,12 @@ public class PDFView extends RelativeLayout {
 
         if (swipeVertical) {
             currentXOffset = -relativeCenterPointInStripXOffset * pdfFile.getMaxPageWidth() + w * 0.5f;
-            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getDocLen(zoom) + h * 0.5f ;
-        }else {
+            currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getDocLen(zoom) + h * 0.5f;
+        } else {
             currentXOffset = -relativeCenterPointInStripXOffset * pdfFile.getDocLen(zoom) + w * 0.5f;
             currentYOffset = -relativeCenterPointInStripYOffset * pdfFile.getMaxPageHeight() + h * 0.5f;
         }
-        moveTo(currentXOffset,currentYOffset);
+        moveTo(currentXOffset, currentYOffset);
         loadPageByOffset();
     }
 
@@ -687,22 +708,23 @@ public class PDFView extends RelativeLayout {
 
         // That's where Canvas.translate(x, y) becomes very helpful.
         // This is the situation :
-        //  _______________________________________________
-        // |   			 |					 			   |
-        // | the actual  |					The big strip  |
-        // |	canvas	 | 								   |
-        // |_____________|								   |
+        // _______________________________________________
+        // | | |
+        // | the actual | The big strip |
+        // | canvas | |
+        // |_____________| |
         // |_______________________________________________|
         //
         // If the rendered part is on the bottom right corner of the strip
         // we can draw it but we won't see it because the canvas is not big enough.
 
-        // But if we call translate(-X, -Y) on the canvas just before drawing the object :
-        //  _______________________________________________
-        // |   			  					  _____________|
-        // |   The big strip     			 |			   |
-        // |		    					 |	the actual |
-        // |								 |	canvas	   |
+        // But if we call translate(-X, -Y) on the canvas just before drawing the object
+        // :
+        // _______________________________________________
+        // | _____________|
+        // | The big strip | |
+        // | | the actual |
+        // | | canvas |
         // |_________________________________|_____________|
         //
         // The object will be on the canvas.
@@ -870,7 +892,7 @@ public class PDFView extends RelativeLayout {
         this.pdfFile = pdfFile;
 
         if (renderingHandlerThread == null) {
-           renderingHandlerThread = new HandlerThread("PDF renderer");
+            renderingHandlerThread = new HandlerThread("PDF renderer");
         }
         if (!renderingHandlerThread.isAlive()) {
             renderingHandlerThread.start();
@@ -944,8 +966,10 @@ public class PDFView extends RelativeLayout {
      * Move to the given X and Y offsets, but check them ahead of time
      * to be sure not to go outside the the big strip.
      *
-     * @param offsetX    The big strip X offset to use as the left border of the screen.
-     * @param offsetY    The big strip Y offset to use as the right border of the screen.
+     * @param offsetX    The big strip X offset to use as the left border of the
+     *                   screen.
+     * @param offsetY    The big strip Y offset to use as the right border of the
+     *                   screen.
      * @param moveHandle whether to move scroll handle or not
      */
     public void moveTo(float offsetX, float offsetY, boolean moveHandle) {
@@ -1142,7 +1166,8 @@ public class PDFView extends RelativeLayout {
     }
 
     /**
-     * @return true if single page fills the entire screen in the scrolling direction
+     * @return true if single page fills the entire screen in the scrolling
+     *         direction
      */
     public boolean pageFillsScreen() {
         float start = -pdfFile.getPageOffset(currentPage, zoom);
@@ -1473,7 +1498,10 @@ public class PDFView extends RelativeLayout {
         return new Configurator(new ByteArraySource(bytes));
     }
 
-    /** Use stream as the pdf source. Stream will be written to bytearray, because native code does not support Java Streams */
+    /**
+     * Use stream as the pdf source. Stream will be written to bytearray, because
+     * native code does not support Java Streams
+     */
     public Configurator fromStream(InputStream stream) {
         return new Configurator(new InputStreamSource(stream));
     }
@@ -1483,7 +1511,9 @@ public class PDFView extends RelativeLayout {
         return new Configurator(docSource);
     }
 
-    private enum State {DEFAULT, LOADED, SHOWN, ERROR}
+    private enum State {
+        DEFAULT, LOADED, SHOWN, ERROR
+    }
 
     @SuppressWarnings("unused")
     public class Configurator {
@@ -1793,16 +1823,15 @@ public class PDFView extends RelativeLayout {
             return 0;
         }
 
-        public static final Parcelable.Creator<PdfViewState> CREATOR =
-                new Parcelable.Creator<PdfViewState>() {
-                    public PdfViewState createFromParcel(Parcel in) {
-                        return new PdfViewState(in);
-                    }
+        public static final Parcelable.Creator<PdfViewState> CREATOR = new Parcelable.Creator<PdfViewState>() {
+            public PdfViewState createFromParcel(Parcel in) {
+                return new PdfViewState(in);
+            }
 
-                    public PdfViewState[] newArray(int size) {
-                        return new PdfViewState[size];
-                    }
-                };
+            public PdfViewState[] newArray(int size) {
+                return new PdfViewState[size];
+            }
+        };
     }
 
     /**
@@ -1810,7 +1839,8 @@ public class PDFView extends RelativeLayout {
      */
     static class SavedState extends BaseSavedState {
 
-        @Nullable PdfViewState viewState;
+        @Nullable
+        PdfViewState viewState;
 
         public SavedState(Parcelable superState) {
             super(superState);
@@ -1832,16 +1862,15 @@ public class PDFView extends RelativeLayout {
             }
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-                    public SavedState createFromParcel(Parcel in) {
-                        return new SavedState(in);
-                    }
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
 
-                    public SavedState[] newArray(int size) {
-                        return new SavedState[size];
-                    }
-                };
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
 
     }
 }
