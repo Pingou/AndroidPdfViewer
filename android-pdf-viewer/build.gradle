@@ -69,11 +69,17 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
-                groupId = 'com.github.barteksc'
-                artifactId = 'android-pdf-viewer'
-                version = '3.2.0-beta.3'
+                artifact("$buildDir/outputs/aar/${project.name}-release.aar")
+                
+                groupId = publishedGroupId
+                artifactId = artifact
+                version = libraryVersion
             }
         }
+    }
+    
+    // Ensure AAR is built before publishing
+    tasks.withType(PublishToMavenLocal) {
+        dependsOn tasks.withType(BundleAarTask)
     }
 }
