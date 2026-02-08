@@ -1,7 +1,4 @@
-plugins {
-    id 'com.android.library'
-    id 'maven-publish'
-}
+apply plugin: 'com.android.library'
 
 ext {
     bintrayRepo = 'maven'
@@ -41,14 +38,20 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    // Configure packaging for 16 KB page size compatibility.
+    // Native libraries should be stored uncompressed and page-aligned in the APK.
     packagingOptions {
         jniLibs {
+            // Setting to false ensures native libraries are stored uncompressed and aligned.
+            // This is the default for AGP 3.6+ but explicitly set for clarity.
             useLegacyPackaging false
         }
     }
 
-    ndkVersion "28.0.12433566"
+    // Enable 16 KB page size support for native libraries
+    ndkVersion "28.0.12433566"  // Use NDK r28+ for 16 KB support
 
+    // Disable lint for now to focus on 16 KB compatibility
     lint {
         abortOnError false
     }
@@ -60,19 +63,16 @@ dependencies {
     api 'io.github.oothp:pdfium-android:1.9.5-beta01'
 }
 
-// --- CORRECTED PUBLISHING BLOCK ---
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = project.group
-            artifactId = project.ext.artifact
-            version = project.version
+apply plugin: 'maven-publish'
 
-            // This nested afterEvaluate ensures that the Android component is ready
-            // before we try to reference it. This resolves the timing issue.
-            // <-- THE FIX IS HERE
-            afterEvaluate {
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
                 from components.release
+                groupId = 'com.github.barteksc'
+                artifactId = 'android-pdf-viewer'
+                version = '3.2.0-beta.3'
             }
         }
     }
