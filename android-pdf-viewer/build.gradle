@@ -77,9 +77,4 @@ afterEvaluate {
             }
         }
     }
-    
-    // Ensure AAR is built before publishing
-    tasks.withType(PublishToMavenLocal) {
-        dependsOn tasks.withType(BundleAarTask)
-    }
 }
