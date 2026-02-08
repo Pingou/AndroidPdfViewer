@@ -77,4 +77,9 @@ afterEvaluate {
             }
         }
     }
+    
+    // Fix the dependency issue
+    tasks.withType(PublishToMavenLocal).configureEach {
+        dependsOn tasks.named("bundleReleaseAar")
+    }
 }
